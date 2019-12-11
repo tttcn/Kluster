@@ -6,15 +6,39 @@
 *   依赖说明：
 *   使用cuda_runtime.h
 */
-#include <cuda_runtime.h>
 
-struct coo
-{
-    int base_id;
-    int query_id;
-    float distance;
-    float for_align;
-};
+#include "moduletake.cuh"
+
+
+// const unsigned long long int GB=1024*1024*1024;
+const unsigned long long int MB = 1024 * 1024;
+// const float TH = 100.0;
+const int Num = 1024 * 1024;
+const int Dim = 512;
+const int Batch = 1024 * 32;
+const int Grid_dim_x = Num;
+const int Block_dim_x = Dim / 2;
+const int Grid_dim_y = Num / Block_dim_x;
+const int Batch_TH = Batch * Batch;
+
+void SetModule(const float *data_d,
+    float *module_d,
+    int data_num,
+    int data_dim){
+
+}
+
+void ModuleTake(const float *product_d,
+                                 const float *module_base_d,
+                                 const float *module_query_d,
+                                 coo *output_d,
+                                 int base_len,
+                                 int query_len,
+                                 float threshold){
+                                     
+
+}
+
 
 // 复杂度O(nd)，1M数据400ms左右，只要执行一次，优化意义不大
 // 优化的思路是按列扫描，提高一个线程束的读取效率
@@ -22,10 +46,10 @@ struct coo
 __global__ void ModuleTakeKernel(const float *product_d,
                                  const float *module_base_d,
                                  const float *module_query_d,
+                                 coo *output_d,
                                  int base_len,
                                  int query_len,
-                                 float threshold,
-                                 coo *output_d)
+                                 float threshold)
 {
     int query_id = (blockIdx.x * blockDim.x + threadIdx.x);
     for (int base_id = 0; base_id < base_len; ++base_id)
@@ -45,18 +69,18 @@ __global__ void ModuleTakeKernel(const float *product_d,
     return;
 }
 
-__global__ void SetModuleKernel(const float *list_d,
-                                int list_len,
-                                int vector_dim,
-                                float *module_d)
+__global__ void SetModuleKernel(const float *data_d,
+    float *module_d,
+    int data_num,
+    int data_dim)
 {
-    int list_id = (blockIdx.x * blockDim.x + threadIdx.x);
+    int data_id = (blockIdx.x * blockDim.x + threadIdx.x);
     float module_square = 0.0f;
-    for (int element_id = 0; element_id < vector_dim; ++element_id)
+    for (int element_id = 0; element_id < data_dim; ++element_id)
     {
-        float element = list_d[list_id * vector_dim + element_id];
+        float element = data_d[data_id * data_dim + element_id];
         module_square += element * element; // 关于这里是用内置power还是直接乘，没有测试过。
     }
-    moudle_d[list_id] = module_square;
+    module_d[data_id] = module_square;
     return;
 }
