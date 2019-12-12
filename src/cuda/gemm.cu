@@ -12,7 +12,7 @@
 // len/num/size
 // rhs(r_row,cross_dim)/lhs(cross_dim,l_col) 都是按行顺序存储的，与cublas中按列存储的方式不同
 void GemmBlas(const float *lhs_d, const float *rhs_d, float *result_d,
- int l_col, int r_row, int cross_dim)
+              int l_col, int r_row, int cross_dim)
 {
     // cublas init
     cublasHandle_t handle;
@@ -29,7 +29,7 @@ void GemmBlas(const float *lhs_d, const float *rhs_d, float *result_d,
                 rhs_d, cross_dim, //A
                 lhs_d, cross_dim, //B
                 &b,
-                result_d, batch_num);
+                result_d, r_row);
     cudaDeviceSynchronize();
     // clear cublas handle
     cublasDestroy(handle);

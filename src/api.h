@@ -13,11 +13,12 @@
 #include "src/config.h"
 
 void DistanceLinker(const void *node_data,
-                    const void *edge_data,
+                    void *edge_data,
                     int data_num,
                     int data_dim,
-                    float threshold);
-                    
+                    float threshold,
+                    int batch_len);
+
 void Knn(const void *node_data,
          const void *edge_data,
          float threshold, int neighest_k);

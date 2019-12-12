@@ -9,36 +9,31 @@
 
 #include "moduletake.cuh"
 
-
-// const unsigned long long int GB=1024*1024*1024;
-const unsigned long long int MB = 1024 * 1024;
-// const float TH = 100.0;
-const int Num = 1024 * 1024;
-const int Dim = 512;
-const int Batch = 1024 * 32;
-const int Grid_dim_x = Num;
-const int Block_dim_x = Dim / 2;
-const int Grid_dim_y = Num / Block_dim_x;
-const int Batch_TH = Batch * Batch;
-
 void SetModule(const float *data_d,
-    float *module_d,
-    int data_num,
-    int data_dim){
-
+               float *module_d,
+               int data_num,
+               int data_dim)
+{
+    dim3 grid_dim(data_num / 512, 1, 1);
+    dim3 block_dim(512, 1, 1);
+    SetModuleKernel<<<grid_dim, block_dim>>>(data_d, module_d, data_num, data_dim);
+    return;
 }
 
 void ModuleTake(const float *product_d,
-                                 const float *module_base_d,
-                                 const float *module_query_d,
-                                 coo *output_d,
-                                 int base_len,
-                                 int query_len,
-                                 float threshold){
-                                     
-
+                const float *module_base_d,
+                const float *module_query_d,
+                unsigned int *take_num_d,
+                coo *output_d,
+                int base_len,
+                int query_len,
+                float threshold)
+{
+    dim3 grid_dim(base_len / 512, 1, 1);
+    dim3 block_dim(512, 1, 1);
+    ModuleTakeKernel<<<grid_dim, block_dim>>>(product_d, module_base_d, module_query_d, take_num_d, output_d, base_len, query_len, threshold);
+    return;
 }
-
 
 // 复杂度O(nd)，1M数据400ms左右，只要执行一次，优化意义不大
 // 优化的思路是按列扫描，提高一个线程束的读取效率
@@ -46,6 +41,7 @@ void ModuleTake(const float *product_d,
 __global__ void ModuleTakeKernel(const float *product_d,
                                  const float *module_base_d,
                                  const float *module_query_d,
+                                 unsigned int *take_num_d,
                                  coo *output_d,
                                  int base_len,
                                  int query_len,
@@ -60,7 +56,7 @@ __global__ void ModuleTakeKernel(const float *product_d,
         float distance = -2.0f * product_d[base_id * query_len + query_id] + module_base_d[base_id] + module_query_d[query_id];
         if (distance < threshold)
         {
-            int output_id = atomicAdd(condtake_num_d, 1);
+            int output_id = atomicAdd(take_num_d, 1);
             output_d[output_id].base_id = base_id;
             output_d[output_id].query_id = query_id;
             output_d[output_id].distance = distance;
@@ -70,9 +66,9 @@ __global__ void ModuleTakeKernel(const float *product_d,
 }
 
 __global__ void SetModuleKernel(const float *data_d,
-    float *module_d,
-    int data_num,
-    int data_dim)
+                                float *module_d,
+                                int data_num,
+                                int data_dim)
 {
     int data_id = (blockIdx.x * blockDim.x + threadIdx.x);
     float module_square = 0.0f;

@@ -1,6 +1,8 @@
 {
     "files.associations": {
+        "*.cuh": "cuda",
         "array": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "cuda_runtime.h": "c"
     }
 }
