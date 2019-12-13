@@ -20,21 +20,24 @@ int main(int argc, char *argv[])
     char *threshold_string=argv[3];
     float * node_data;
     coo * edge_data;
-    int data_num=;
-    int data_dim=;
+    int data_num=1;
+    int data_dim=1;
     float threshold;
+
+    printf("%s\n%s\n%s\n",node_file_name,edge_file_name,threshold_string);
     
     // 打开并读取文件
-    open(node_file_name);
-    mmap(); // mmap映射数据至内存中
-    close();
+    // open(node_file_name);
+    // mmap(); // mmap映射数据至内存中
+    // close();
 
     
-    int batch_len = 8192;
-    DistanceLinker(node_data, edge_data, data_num, data_dim, threshold, batch_len);
+    // int batch_len = 8192;
+    // DistanceLinker(node_data, edge_data, data_num, data_dim, threshold, batch_len);
 
-    // 写回结果
-    open(edge_file_name);
-    write();
-    close();
+    // // 写回结果
+    // open(edge_file_name);
+    // write();
+    // close();
+    return 0;
 }
