@@ -1,6 +1,6 @@
 /*
 *   使用cuBLAS库所实现的距离计算方法，封装了INT8和FLOAT32两种类型的计算接口，INT8部分使用SIMD指令。
-*   cuBLAS实现的gemm效率极高，经过了汇编指令优化，几乎可以完全发挥出gpu的全部算力，唯一可能不够好的地方可能是没有做strassen算法优化。
+*   cuBLAS实现的gemm效率极高，经过了汇编指令优化，几乎可以完全发挥出gpu的全部算力。
 *   --------------------------------------------------------------------------------------------------------------- 
 *   编译说明：
 *   使用cuBLAS，需要在nvcc编译时加上"-lcublas"选项
@@ -24,7 +24,7 @@ void GemmBlas(const float *lhs_d, const float *rhs_d, float *result_d,
     // result = -2*trans(rhs)*lhs + mod_mat
     cublasSgemm(handle,
                 CUBLAS_OP_T, CUBLAS_OP_N,
-                l_col, r_row, cross_dim, //
+                r_row, l_col , cross_dim, //
                 &a,
                 rhs_d, cross_dim, //A
                 lhs_d, cross_dim, //B

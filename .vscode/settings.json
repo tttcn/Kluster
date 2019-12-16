@@ -1,8 +1,11 @@
 {
     "files.associations": {
+        "*.cu": "cuda",
         "*.cuh": "cuda",
         "array": "cpp",
         "string": "cpp",
-        "cuda_runtime.h": "c"
+        "cuda_runtime.h": "c",
+        "*.tcc": "cpp",
+        "fstream": "cpp"
     }
 }

@@ -17,6 +17,7 @@ void SetModule(const float *data_d,
     dim3 grid_dim(data_num / 512, 1, 1);
     dim3 block_dim(512, 1, 1);
     SetModuleKernel<<<grid_dim, block_dim>>>(data_d, module_d, data_num, data_dim);
+    cudaDeviceSynchronize();
     return;
 }
 
@@ -29,9 +30,10 @@ void ModuleTake(const float *product_d,
                 int query_len,
                 float threshold)
 {
-    dim3 grid_dim(base_len / 512, 1, 1);
+    dim3 grid_dim(query_len / 512, 1, 1);
     dim3 block_dim(512, 1, 1);
     ModuleTakeKernel<<<grid_dim, block_dim>>>(product_d, module_base_d, module_query_d, take_num_d, output_d, base_len, query_len, threshold);
+    cudaDeviceSynchronize();
     return;
 }
 
@@ -54,9 +56,9 @@ __global__ void ModuleTakeKernel(const float *product_d,
         // if (base_id == query_id)
         //     continue;
         float distance = -2.0f * product_d[base_id * query_len + query_id] + module_base_d[base_id] + module_query_d[query_id];
-        if (distance < threshold)
+        if (distance < threshold && distance > PRECISION_LIMIT)
         {
-            int output_id = atomicAdd(take_num_d, 1);
+            int output_id = atomicAdd(take_num_d, 1);   //这里保证了每一个应该被保存的线程只能拿到唯一的output_id
             output_d[output_id].base_id = base_id;
             output_d[output_id].query_id = query_id;
             output_d[output_id].distance = distance;

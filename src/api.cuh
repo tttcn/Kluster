@@ -11,13 +11,15 @@
 #include "src/cuda/moduletake.cuh"
 #include "src/cuda/gemm.cuh"
 #include "src/config.h"
+#include <cuda_runtime.h>
+#include <cmath>
 
-void DistanceLinker(const void *node_data,
+int DistanceLinker(const void *node_data,
                     void *edge_data,
-                    int data_num,
-                    int data_dim,
+                    size_t data_num,
+                    size_t data_dim,
                     float threshold,
-                    int batch_len);
+                    size_t batch_len);
 
 void Knn(const void *node_data,
          const void *edge_data,

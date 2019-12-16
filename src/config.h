@@ -1,6 +1,9 @@
 #ifndef KLUSTER_CONFIG_H_
 #define KLUSTER_CONFIG_H_
 
+#define PRECISION_LIMIT -0.01f
+#define MAX_EDGE_NUM 0x1<<25
+
 struct coo
 {
     int base_id;
