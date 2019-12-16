@@ -14,11 +14,11 @@
 ## 代码
 文件可以分为几个层次：
 - Kluster：顶层文件夹，包含总体的Makefile
-    -- bin：生成的库文件和二进制程序都在这里
-    -- data：存放数据
-    -- test：测试有关的源文件和Makefile
-    -- src：包含有cuda文件夹以及一些C/C++文件，有一些封装了cuda算子的算法，一些配置文件以及Makefile
-        --- cuda：cuda算子的实现 
+    - bin：生成的库文件和二进制程序都在这里
+    - data：存放数据
+    - test：测试有关的源文件和Makefile
+    - src：包含有cuda文件夹以及一些C/C++文件，有一些封装了cuda算子的算法，一些配置文件以及Makefile
+        - cuda：cuda算子的实现 
 
 
 ## 已知问题
