@@ -1,6 +1,6 @@
 /*
 *   整合的算法过程
-*   DistanceLinker生成距离阈值
+*   DistanceLinker生成基于距离阈值的边表
 */
 
 #ifndef KLUSTER_API_H_
@@ -8,11 +8,13 @@
 
 #include <memory>
 #include <unistd.h>
+#include <cuda_runtime.h>
+#include <cmath>
+
 #include "src/cuda/moduletake.cuh"
 #include "src/cuda/gemm.cuh"
 #include "src/config.h"
-#include <cuda_runtime.h>
-#include <cmath>
+#include "src/debug_tool.h"
 
 int DistanceLinker(const void *node_data,
                     void *edge_data,

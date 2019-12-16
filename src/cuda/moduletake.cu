@@ -56,7 +56,7 @@ __global__ void ModuleTakeKernel(const float *product_d,
         // if (base_id == query_id)
         //     continue;
         float distance = -2.0f * product_d[base_id * query_len + query_id] + module_base_d[base_id] + module_query_d[query_id];
-        if (distance < threshold && distance > PRECISION_LIMIT)
+        if (distance < threshold)
         {
             int output_id = atomicAdd(take_num_d, 1);   //这里保证了每一个应该被保存的线程只能拿到唯一的output_id
             output_d[output_id].base_id = base_id;

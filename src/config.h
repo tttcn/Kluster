@@ -1,8 +1,9 @@
 #ifndef KLUSTER_CONFIG_H_
 #define KLUSTER_CONFIG_H_
 
-#define PRECISION_LIMIT -0.01f
-#define MAX_EDGE_NUM 0x1<<25
+#define PRECISION_LIMIT 0.01f   // 可能存在的绝对浮点误差大小
+#define MAX_EDGE_NUM 0x1<<28    // 256M
+#define BATCH_LEN 16384
 
 struct coo
 {
@@ -12,12 +13,11 @@ struct coo
     float for_align;
 };
 
-// const unsigned long long int GB=1024*1024*1024;
+const unsigned long long int GB=1024*1024*1024;
 const unsigned long long int MB = 1024 * 1024;
-// const float TH = 100.0;
 const int Num = 1024 * 1024;
 const int Dim = 512;
-const int Batch = 1024 * 32;
+const int Batch = 1024 * 16;
 const int Grid_dim_x = Num;
 const int Block_dim_x = Dim / 2;
 const int Grid_dim_y = Num / Block_dim_x;

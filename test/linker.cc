@@ -35,27 +35,14 @@ int main(int argc, char *argv[])
     int edge_num = MAX_EDGE_NUM;
     coo *edge_data = new coo[edge_num];
 
-    // printf("%d\n%d\n%f\n", data_num, data_dim, threshold);
-
     // 打开并读取文件
     int fd_node = open(node_file_name, O_RDONLY);
     unsigned int node_file_size = data_num * data_dim * sizeof(float);
     float *node_data = (float *)mmap(NULL, node_file_size, PROT_READ, MAP_SHARED, fd_node, 0); // mmap映射数据至内存中
 
-    // // 读取测试
-    // for (int line_id = 0; line_id < 10; ++line_id)
-    // {
-    //     for (int element_id = 0; element_id < data_dim; ++element_id)
-    //     {
-    //         printf("%f,", node_data[line_id * data_dim + element_id]);
-    //     }
-    //     printf("\n");
-    // }
-    // printf("ready to run\n");
-
-    int batch_len = 16384;
+    int batch_len = BATCH_LEN;  // 经验参数，16K对应最大4G的coo
     edge_num = DistanceLinker(node_data, edge_data, data_num, data_dim, threshold, batch_len);
-    printf("linked\n");
+    printf("edge linked\n");
 
     // 写回结果
     if (edge_num == -1) // 阈值太高导致取得边数超过了容纳上限
@@ -64,6 +51,7 @@ int main(int argc, char *argv[])
     }
     else
     {
+        printf("edge num is %d\n", edge_num);
         FILE *edge_file = fopen(edge_file_name, "w");
         fprintf(edge_file, "node1_position,node2_position,distance\n");
         for (int edge_id = 0; edge_id < edge_num; ++edge_id)
@@ -71,8 +59,6 @@ int main(int argc, char *argv[])
             fprintf(edge_file, "%d,%d,%f\n", edge_data[edge_id].base_id, edge_data[edge_id].query_id, edge_data[edge_id].distance);
         }
         fclose(edge_file);
-        // int fd_edge = open(edge_file_name, O_RDWR|O_CREAT);
-        // close(fd_edge);
     }
 
     delete[] edge_data;

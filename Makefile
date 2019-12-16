@@ -18,13 +18,19 @@ check:
 	cd data; python check.py
 
 test:
-	cd bin; ./linker ../data/eco_nodes ../data/eco_edges.csv 65536 20 2.0
+	cd bin; ./linker ../data/eco_nodes ../data/eco_edges.csv 65536 20 1.0
 
 prof:
 	cd bin; nvprof ./linker ../data/eco_nodes ../data/eco_edges.csv 822802 20 1000
 
 linker: Kluster
 	cd test; make linker
+
+dlinker: debug
+	cd test; make linker
+
+debug:
+	cd src; make debug; make libKluster.so
 
 Kluster:
 	cd src; make libKluster.so

@@ -7,12 +7,16 @@ LIBDIRS = -L/usr/local/cuda/lib64
 INCDIRS = -I/usr/local/cuda/include -I..
 BINDIR = ../bin
 
-libKluster.so: api.o
-	$(CC) $(CXXFLAGS) $(INCDIRS)  api.o cuda/*.o  $(LIBDIRS) $(LDFLAGS) -shared -o $(BINDIR)/$@
+libKluster.so: api.o debug_tool.o
+	$(CC) $(CXXFLAGS) $(INCDIRS)  *.o cuda/*.o  $(LIBDIRS) $(LDFLAGS) -shared -o $(BINDIR)/$@
 
-libKluster.a:
-	$(NVCC) $(CUDAFLAGS) api.o cuda/*.o -o $@
+debug: api.cu api.cuh
+	cd cuda; make all
+	$(NVCC) $(CUDAFLAGS) $(INCDIRS) api.cu -D DEBUG_
 
 api.o: api.cu api.cuh
 	cd cuda; make all
 	$(NVCC) $(CUDAFLAGS) $(INCDIRS) api.cu
+
+debug_tool.o: debug_tool.cc
+	$(CC) $(CXXFLAGS) $(INCDIRS) debug_tool.cc -c
