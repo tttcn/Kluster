@@ -13,6 +13,13 @@ struct coo
     float for_align;
 };
 
+struct Node
+{
+    int data;
+    int rank;
+    int parent;
+};
+
 const unsigned long long int GB=1024*1024*1024;
 const unsigned long long int MB = 1024 * 1024;
 const int Num = 1024 * 1024;

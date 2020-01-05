@@ -6,6 +6,7 @@
         "string": "cpp",
         "cuda_runtime.h": "c",
         "*.tcc": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "iosfwd": "cpp"
     }
 }
