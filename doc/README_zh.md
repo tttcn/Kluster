@@ -1,5 +1,6 @@
 # Kluster
 一个和参数K有关的cluster底层算法库。
+> 目前正在重构代码
 
 ## 用法
 在Kluster目录下执行一系列make指令即可

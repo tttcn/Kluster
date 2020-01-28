@@ -8,3 +8,5 @@
 
 void GemmBlas(const float *lhs_d, const float *rhs_d, float *result_d,
               int l_col, int r_row, int cross_dim);
+
+//GemmBlas::Operator()
