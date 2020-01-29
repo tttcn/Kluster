@@ -10,7 +10,7 @@
 
 class Device{
     DeviceType  device_type_;
-    DeviceIndex device_index_;
+    DeviceIndex device_id_;
     bool   is_occupied_;
     // buffer_list_;
 public:
@@ -20,8 +20,8 @@ public:
     // void Get();
     void Set();
     void Exec();
-    void * Malloc(size_t buffer_size);
-    void Free(void * pointer);
-};
+    void Malloc(void * pointer_managed);
+    void Free(void * pointer_managed);
+}
 
 #endif  // KLUSTER_DEVICE_H_

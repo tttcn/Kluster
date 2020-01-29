@@ -3,7 +3,7 @@
 *   数据格式：v1,...,vn 这样的连续向量
 */
 
-#include "src/api.cuh"
+#include "src/api.h"
 #include "fstream"
 #include "iostream"
 #include <string>
@@ -86,7 +86,8 @@ void fprintSet(Node *node, int node_num, FILE *set_file)
 }
 
 int main(int argc, char *argv[])
-{
+{   
+    DEBUG("debug mode on\n");
     if (argc != 6)
     {
         printf("usage: program node_file_name edge_file_name data_num data_dim threshold\n");
@@ -104,15 +105,19 @@ int main(int argc, char *argv[])
 
     int edge_num = MAX_EDGE_NUM;
     coo *edge_data = new coo[edge_num];
+    DEBUG("edge malloced\n");
 
     // 并查集初始化
     Node *node = new Node[data_num];
     init_node(node, data_num);
+    DEBUG("union node malloced\n");
 
     // 打开并读取文件
     int fd_node = open(node_file_name, O_RDONLY);
+    DEBUG("file opened\n");
     unsigned int node_file_size = data_num * data_dim * sizeof(float);
     float *node_data = (float *)mmap(NULL, node_file_size, PROT_READ, MAP_SHARED, fd_node, 0); // mmap映射数据至内存中
+    DEBUG("mmap done\n");
 
     int batch_len = BATCH_LEN; // 经验参数，16K对应最大4G的coo
     edge_num = DistanceLinker(node_data, edge_data, data_num, data_dim, threshold, batch_len);
@@ -126,20 +131,20 @@ int main(int argc, char *argv[])
     else
     {
         printf("edge num is %d\n", edge_num);
-        FILE *edge_file = fopen(edge_file_name, "w");
-        fprintf(edge_file, "node1_position,node2_position,distance\n");
-        for (int edge_id = 0; edge_id < edge_num; ++edge_id)
-        {
-            fprintf(edge_file, "%d,%d,%f\n", edge_data[edge_id].base_id, edge_data[edge_id].query_id, edge_data[edge_id].distance);
-        }
-        fclose(edge_file);
+        // FILE *edge_file = fopen(edge_file_name, "w");
+        // fprintf(edge_file, "node1_position,node2_position,distance\n");
+        // for (int edge_id = 0; edge_id < edge_num; ++edge_id)
+        // {
+        //     fprintf(edge_file, "%d,%d,%f\n", edge_data[edge_id].base_id, edge_data[edge_id].query_id, edge_data[edge_id].distance);
+        // }
+        // fclose(edge_file);
 
-        for (int edge_id = 0; edge_id < edge_num; ++edge_id)
-        {
-            Union(node, edge_data[edge_id].base_id, edge_data[edge_id].query_id);
-        }
-        FILE *set_file = fopen("../data/set.txt", "w");
-        fprintSet(node, data_num, set_file);
+        // for (int edge_id = 0; edge_id < edge_num; ++edge_id)
+        // {
+        //     Union(node, edge_data[edge_id].base_id, edge_data[edge_id].query_id);
+        // }
+        // FILE *set_file = fopen("../data/set.txt", "w");
+        // fprintSet(node, data_num, set_file);
     }
 
     delete[] edge_data;

@@ -18,10 +18,10 @@ check:
 	cd data; python check.py
 
 test:
-	cd bin; ./linker ../data/eco_nodes ../data/eco_edges.csv 308331 768 25.0
+	cd bin; ./linker ../data/eco_nodes ../data/eco_edges.csv 325432 20 0.00001
 
 prof:
-	cd bin; nvprof ./linker ../data/eco_nodes ../data/eco_edges.csv 300000 768 25.0
+	cd bin; nvprof ./linker ../data/eco_nodes ../data/eco_edges.csv 325432 768 25.0
 
 linker: Kluster
 	cd test; make linker

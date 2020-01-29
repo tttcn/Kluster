@@ -9,7 +9,7 @@
 
 ErrorType CudaCheck(cudaError_t error_code);
 
-ErrorType CudaMallocManaged(void ** pointer_address, size_t buffer_size);
+ErrorType CudaMallocManaged(void * pointer_managed, size_t buffer_size);
 ErrorType CudaSetDevice(int device_index);
 ErrorType CudaFree(void * pointer_managed);
 
