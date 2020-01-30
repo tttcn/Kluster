@@ -25,7 +25,6 @@ void Device::Exec(){
 }
 
 void * Device::Malloc(size_t buffer_size){
-    this->Set();
     void * pointer=NULL;
     if (device_type_ == CUDA){
         CudaMallocManaged(&pointer, buffer_size);
@@ -35,7 +34,6 @@ void * Device::Malloc(size_t buffer_size){
 }
 
 void Device::Free(void * pointer){
-    this->Set();
     if (device_type_ == CUDA){
         CudaFree(pointer);
     }

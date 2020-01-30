@@ -11,10 +11,9 @@
 class Device{
     DeviceType  device_type_;
     DeviceIndex device_index_;
-    bool   is_occupied_;
-    // buffer_list_;
+    // bool   is_occupied_;
 public:
-    Device(DeviceType device_type,DeviceIndex device_index);
+    Device(DeviceType device_type, DeviceIndex device_index);
     ~Device();
     // void Check();
     // void Get();

@@ -36,8 +36,10 @@ typedef int DeviceIndex;
 
 // enumerates
 enum DeviceType {CPU,NUMA,CUDA};
-enum ElementType {FLOAT64,FLOAT32,FLOAT16,INT32,INT16,INT8};
+enum ElementType {FLOAT64,FLOAT32,FLOAT16,INT32,INT16,INT8,UINT64,UINT32,COO};
 enum ErrorType {NO_ERROR,FUNCTION_ERROR,CUDA_ERROR,USAGE_ERROR,INITIALIZATION_ERROR};
 
+// consts
+size_t kElementSize = {8,4,2,4,2,1,8,4,16};
 
 #endif // KLUSTER_CONFIG_H_
