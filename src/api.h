@@ -6,15 +6,6 @@
 #ifndef KLUSTER_API_H_
 #define KLUSTER_API_H_
 
-#include <memory>
-#include <unistd.h>
-#include <cmath>
-
-#include "src/cuda/moduletake.cuh"
-#include "src/cuda/gemm.cuh"
-#include "src/config.h"
-#include "src/debug_tool.h"
-#include "src/device.h"
 
 int DistanceLinker(const void *node_data,
                     void *edge_data,

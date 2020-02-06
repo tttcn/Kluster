@@ -1,4 +1,5 @@
 #include "device.h"
+#include "debug_tool.h"
 
 Device::Device(DeviceType device_type, DeviceIndex device_index){
     // device check

@@ -10,7 +10,7 @@ BINDIR = ../../bin
 all: moduletake.o gemm.o
 
 gemm.o: gemm.cu
-	$(NVCC) $(CUDAFLAGS) gemm.cu 
+	$(NVCC) $(CUDAFLAGS)  $(INCDIRS) gemm.cu 
 
 moduletake.o: moduletake.cu
 	$(NVCC) $(CUDAFLAGS) $(INCDIRS) moduletake.cu 
