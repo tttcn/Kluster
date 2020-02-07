@@ -10,10 +10,10 @@
 
 class Device{
     DeviceType  device_type_;
-    DeviceIndex device_index_;
+    DeviceId device_id_;
     // bool   is_occupied_;
 public:
-    Device(DeviceType device_type, DeviceIndex device_index);
+    Device(DeviceType device_type, DeviceId device_id);
     ~Device();
     // void Check();
     // void Get();

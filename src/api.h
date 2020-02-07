@@ -6,13 +6,15 @@
 #ifndef KLUSTER_API_H_
 #define KLUSTER_API_H_
 
+#include "src/config.h"
 
 int DistanceLinker(const void *node_data,
                     void *edge_data,
                     size_t data_num,
                     size_t data_dim,
+                    size_t edge_limit,
                     float threshold,
-                    size_t batch_len);
+                    int batch_len);
 
 void Knn(const void *node_data,
          const void *edge_data,

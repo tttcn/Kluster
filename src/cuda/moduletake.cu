@@ -13,15 +13,12 @@
 
 #include "src/config.h"
 #include "src/matrix.h"
+#include "src/cuda_wrapper.h"
 
-void SetModule(const Matrix &data, Matrix &module, int data_num, int data_dim) {
+void SetModule(const Matrix<Float32> &data, Matrix<Float32> &module) {
   // check parameters
   // check type
   bool type_check_passed = true;
-  ElementType element_type = data.element_type_;
-  if (data.element_type_ != module.element_type_) {
-    type_check_passed = false;
-  }
   // check shape
   bool shape_check_passed = true;
   if (data.row_num_ != module.row_num_ || module.col_num_ != 1) {
@@ -42,17 +39,17 @@ void SetModule(const Matrix &data, Matrix &module, int data_num, int data_dim) {
   return;
 }
 
-unsigned int ModuleTake(const Matrix &product, const Matrix &module_base,
-                        const Matrix &module_query, Matrix &output,
-                        float threshold) {
-  unsigned int take_num = 0;
-  unsigned int *take_num_ptr = nil;
-  CudaManagedMalloc(&take_num_ptr, sizeof(unsigned int));
-  memcpy(take_num_ptr, &take_num, sizeof(unsigned int));
+Uint32 ModuleTake(const Matrix<Float32> &product,
+                  const Matrix<Float32> &module_base,
+                  const Matrix<Float32> &module_query, Matrix<Coo> &output,
+                  float threshold) {
+  Uint32 take_num = 0;
+  Uint32 *take_num_ptr = nullptr;
+  CudaMallocManaged((void **)&take_num_ptr, sizeof(Uint32));
+  memcpy(take_num_ptr, &take_num, sizeof(Uint32));
   // check parameters 需要修改
   // check type
   bool type_check_passed = true;
-  ElementType element_type = product.element_type_;
   // check shape
   bool shape_check_passed = true;
   if (product.row_num_ != module_base.row_num_ ||
@@ -81,7 +78,7 @@ unsigned int ModuleTake(const Matrix &product, const Matrix &module_base,
 __global__ void ModuleTakeKernel(const float *product_d,
                                  const float *&module_base_d,
                                  const float *&module_query_d,
-                                 unsigned int *take_num_d, coo *output_d,
+                                 unsigned int *take_num_d, Coo *output_d,
                                  int base_len, int query_len, float threshold) {
   int query_id = (blockIdx.x * blockDim.x + threadIdx.x);
   for (int base_id = 0; base_id < base_len; ++base_id) {
@@ -102,7 +99,7 @@ __global__ void ModuleTakeKernel(const float *product_d,
   return;
 }
 
-__global__ void SetModuleKernel(const Matrix &data_d, Matrix &module_d,
+__global__ void SetModuleKernel(const float *data_d, float *module_d,
                                 int data_num, int data_dim) {
   int data_id = (blockIdx.x * blockDim.x + threadIdx.x);
   float module_square = 0.0f;

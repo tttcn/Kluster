@@ -2,13 +2,14 @@
 #define KLUSTER_CONFIG_H_
 
 #include <cstdint>
+#include <unistd.h>
 
 // consts
 #define PRECISION_LIMIT 0.01f  // 可能存在的绝对浮点误差大小
 #define MAX_EDGE_NUM 0x1 << 28 // 256M
 #define BATCH_LEN 16384
 
-struct coo {
+struct Coo {
   int base_id;
   int query_id;
   float distance;
@@ -32,10 +33,11 @@ const int Grid_dim_y = Num / Block_dim_x;
 const int Batch_TH = Batch * Batch;
 
 // types
-typedef int DeviceIndex;
+typedef int DeviceId;
 typedef int8_t Int8;
 typedef float Float32;
 typedef double Float64;
+typedef unsigned int Uint32;
 
 // enumerates
 enum DeviceType { CPU, NUMA, CUDA };
