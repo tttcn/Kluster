@@ -7,15 +7,17 @@
 *   使用cuda_runtime.h
 */
 
-#include "moduletake.cuh"
+#include "moduletake.h"
 
 #include "cuda_runtime.h"
 
 #include "src/config.h"
-#include "src/matrix.h"
 #include "src/cuda_wrapper.h"
+#include "src/matrix.h"
 
-void SetModule(const Matrix<Float32> &data, Matrix<Float32> &module) {
+namespace Kluster {
+template<>
+void SetModule<Float32>(const Matrix<Float32> &data, Matrix<Float32> &module) {
   // check parameters
   // check type
   bool type_check_passed = true;
@@ -39,6 +41,7 @@ void SetModule(const Matrix<Float32> &data, Matrix<Float32> &module) {
   return;
 }
 
+template<>
 Uint32 ModuleTake(const Matrix<Float32> &product,
                   const Matrix<Float32> &module_base,
                   const Matrix<Float32> &module_query, Matrix<Coo> &output,
@@ -69,15 +72,14 @@ Uint32 ModuleTake(const Matrix<Float32> &product,
     cudaDeviceSynchronize();
   }
   return take_num;
-  ;
 }
 
 // 复杂度O(nd)，1M数据400ms左右，只要执行一次，优化意义不大
 // 优化的思路是按列扫描，提高一个线程束的读取效率
 // 用atomic的原因是因为进入这一分支的线程并不多。
 __global__ void ModuleTakeKernel(const float *product_d,
-                                 const float *&module_base_d,
-                                 const float *&module_query_d,
+                                 const float *module_base_d,
+                                 const float *module_query_d,
                                  unsigned int *take_num_d, Coo *output_d,
                                  int base_len, int query_len, float threshold) {
   int query_id = (blockIdx.x * blockDim.x + threadIdx.x);
@@ -110,4 +112,5 @@ __global__ void SetModuleKernel(const float *data_d, float *module_d,
   }
   module_d[data_id] = module_square;
   return;
+}
 }

@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <unistd.h>
 
+namespace Kluster {
 // consts
 #define PRECISION_LIMIT 0.01f  // 可能存在的绝对浮点误差大小
 #define MAX_EDGE_NUM 0x1 << 28 // 256M
@@ -62,5 +63,6 @@ enum ErrorType {
 
 // consts
 // size_t kElementSize[32] = {8, 4, 2, 4, 2, 1, 8, 4, 16};
+}
 
 #endif // KLUSTER_CONFIG_H_

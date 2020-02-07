@@ -1,14 +1,16 @@
+
 #include "api.h"
 
 #include <cmath>
-#include <memory>
+#include <cstring>
 
 #include "src/config.h"
-#include "src/cuda/gemm.cuh"
-#include "src/cuda/moduletake.cuh"
+#include "src/cuda/gemm.h"
+#include "src/cuda/moduletake.h"
 #include "src/debug_tool.h"
 #include "src/device.h"
 
+namespace Kluster {
 int DistanceLinker(const void *node_data, void *edge_data, size_t node_num,
                    size_t node_dim, size_t edge_limit, float threshold,
                    int batch_len) {
@@ -27,8 +29,9 @@ int DistanceLinker(const void *node_data, void *edge_data, size_t node_num,
   DEBUG("data size is %lu\n", node_size);
 
   // _m means managed
-  Matrix<Float32> node_m(node_data, node_num, node_dim, CUDA);
-  Matrix<Coo> edge_m(edge_data, edge_limit, 1, CUDA);
+  Matrix<Float32> node_m(node_num, node_dim, CUDA);
+  memcpy(node_m.Get(), node_data, node_size);
+  Matrix<Coo> edge_m(edge_limit, 1, CUDA);
   Matrix<Float32> module_m(node_num, 1, CUDA);
   Matrix<Float32> result_m(batch_len, batch_len, CUDA);
   Matrix<Coo> output_m(batch_len, batch_len, CUDA);
@@ -40,7 +43,7 @@ int DistanceLinker(const void *node_data, void *edge_data, size_t node_num,
   DEBUG("data moved.\n");
   // 分块计算
   // 先计算module array
-  SetModule(node_m,module_m);
+  SetModule(node_m, module_m);
   // module_m = SetModule(node_m.Slice());
   DEBUG("module set.\n");
 
@@ -77,7 +80,8 @@ int DistanceLinker(const void *node_data, void *edge_data, size_t node_num,
       // #ifdef DEBUG_
       //       gemmtest(node_m, result_m, batch_len, lid, rid);
       // #endif
-      Uint32 take_num = ModuleTake(result_m, module_base_m, module_query_m, output_m, threshold);
+      Uint32 take_num = ModuleTake(result_m, module_base_m, module_query_m,
+                                   output_m, threshold);
       // #ifdef DEBUG_
       //       taketest(node_m, result_m, output_m, batch_len, *take_num_m, lid,
       //       rid);
@@ -85,8 +89,7 @@ int DistanceLinker(const void *node_data, void *edge_data, size_t node_num,
       // 写回结果
 
       // edge_m.Append(output_m); id的偏移需要修正
-      for (Uint32 edge_id = 0; cal_flag == 0 && edge_id < take_num;
-           ++edge_id) {
+      for (Uint32 edge_id = 0; cal_flag == 0 && edge_id < take_num; ++edge_id) {
         int base_id = output_m[edge_id].base_id + lid * batch_len;
         int query_id = output_m[edge_id].query_id + rid * batch_len;
         float distance = output_m[edge_id].distance;
@@ -99,16 +102,16 @@ int DistanceLinker(const void *node_data, void *edge_data, size_t node_num,
             total_take_num = -1;
             cal_flag = 1;
           }
-// #ifdef DEBUG_
-//           if (distance < PRECISION_LIMIT) {
-//             float cpu_distance =
-//                 l2_float32(node_m, base_id, query_id, node_dim);
-//             float diff = cpu_distance - distance;
-//             if (diff > PRECISION_LIMIT * 0.01) {
-//               printf("gpu:%f |cpu:%f\n", distance, cpu_distance);
-//             }
-//           }
-// #endif
+          // #ifdef DEBUG_
+          //           if (distance < PRECISION_LIMIT) {
+          //             float cpu_distance =
+          //                 l2_float32(node_m, base_id, query_id, node_dim);
+          //             float diff = cpu_distance - distance;
+          //             if (diff > PRECISION_LIMIT * 0.01) {
+          //               printf("gpu:%f |cpu:%f\n", distance, cpu_distance);
+          //             }
+          //           }
+          // #endif
         }
       }
     }
@@ -121,4 +124,5 @@ int DistanceLinker(const void *node_data, void *edge_data, size_t node_num,
 void Knn(const void *node_data, const void *edge_data, float threshold,
          int neighest_k) {
   return;
+}
 }

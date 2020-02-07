@@ -19,6 +19,9 @@
 
 #include "src/api.h"
 #include "src/debug_tool.h"
+#include "src/config.h"
+
+using namespace Kluster;
 
 void init_node(Node *node, int node_num) {
   for (int id = 0; id < node_num; ++id) {
@@ -112,7 +115,8 @@ int main(int argc, char *argv[]) {
   DEBUG("mmap done\n");
 
   int batch_len = BATCH_LEN; // 经验参数，16K对应最大4G的Coo
-  edge_num = DistanceLinker(node_data, edge_data, data_num, data_dim, edge_num, threshold, batch_len);
+  edge_num = DistanceLinker(node_data, edge_data, data_num, data_dim,
+                                     edge_num, threshold, batch_len);
   printf("edge linked\n");
 
   // 写回结果

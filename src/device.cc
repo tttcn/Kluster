@@ -1,6 +1,7 @@
 #include "device.h"
 #include "debug_tool.h"
 
+namespace Kluster {
 Device::Device(DeviceType device_type, DeviceId device_id) {
   // device check
   device_type_ = device_type;
@@ -38,4 +39,5 @@ void Device::Free(void *pointer) {
     CudaFree(pointer);
   }
   return;
+}
 }

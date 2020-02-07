@@ -8,7 +8,7 @@
 *   使用OpenMP，需要在gcc编译时加上"-fopenmp"；或者使用nvcc编译，使用"-Xcompiler
 * -fopenmp"将"-fopenmp"参数直接传递给gcc。
 */
-#include "gemm.cuh"
+#include "gemm.h"
 
 #include "cublas_v2.h"
 #include <cuda_runtime.h>
@@ -20,6 +20,7 @@
 
 #include "src/matrix.h"
 
+namespace Kluster {
 // len/num/size
 // rhs(r_row,cross_dim)/lhs(cross_dim,l_col)
 // 都是按行顺序存储的，与cublas中按列存储的方式不同
@@ -45,77 +46,80 @@ void GemmBlas(const float *lhs_d, const float *rhs_d, float *result_d,
 
 // gemm(lhs,rhs,result) = result = -2*trans(rhs)*lhs
 //
-template <typename T>
-void Gemm(const Matrix<T> &lhs, const Matrix<T> &rhs, Matrix<T> &result) {
+// template <typename T>
+// void Gemm(const Matrix<T> &lhs, const Matrix<T> &rhs, Matrix<T> &result) {
+//   // check parameters
+//   // check type
+//   bool type_check_passed = true;
+//   // ElementType element_type = lhs.element_type_;
+//   // if (lhs.element_type_ != rhs.element_type_ ||
+//   //     lhs.element_type_ != result.element_type_ ||
+//   //     rhs.element_type_ != result.element_type_) {
+//   //   type_check_passed = false;
+//   // }
+//   // check shape
+//   bool shape_check_passed = true;
+//   if (lhs.col_num_ != rhs.row_num_ || result.row_num_ != lhs.row_num_ ||
+//       result.col_num_ != rhs.col_num_) {
+//     shape_check_passed = false;
+//   }
+//   bool check_passed = type_check_passed && shape_check_passed;
+//   // check_passed = CheckParameters(lhs_d, rhs_d);
+
+//   if (check_passed) {
+//     // prefetch
+//     // float *lhs_ptr = lhs.Prefetch();
+//     // float *rhs_ptr = rhs.Prefetch();
+
+//     // cublas init
+//     // cublasHandle_t handle;
+//     // cublasCreate(&handle);
+
+//     // switch (0) {
+//     // case:
+//     //   INT8 // SIMD指令,对计算能力要求在x.y以上。
+//     //       break;
+//     // case:
+//     //   FLOAT32
+//     //   float a = 1.f;
+//     //   float b = 0.f;
+//     //   float *lhs_ptr = lhs.Get();
+//     //   float *rhs_ptr = rhs.Get();
+//     //   float *result_ptr = result.Get();
+//     //   int r_row = rhs.row_num_;
+//     //   int l_col = lhs.col_num_;
+//     //   int cross_dim = lhs.row_num_;
+//     //   // C=a*opt(A)*opt(B)+b*C
+//     //   // result = trans(rhs)*lhs + mod_mat
+//     //   cublasSgemm(handle, CUBLAS_OP_T, CUBLAS_OP_N, r_row, l_col,
+//     cross_dim,
+//     //   //
+//     //               &a, rhs_ptr, cross_dim, // A
+//     //               lhs_ptr, cross_dim,     // B
+//     //               &b, result_ptr, r_row);
+//     //   break;
+//     // }
+
+//     // cudaDeviceSynchronize();
+//     // // clear cublas handle
+//     // cublasDestroy(handle);
+//   }
+
+//   return;
+// }
+
+template<>
+void Gemm<Float32>(const Matrix<Float32> &lhs, const Matrix<Float32> &rhs,
+                   Matrix<Float32> &result) {
   // check parameters
   // check type
   bool type_check_passed = true;
-  // ElementType element_type = lhs.element_type_;
-  // if (lhs.element_type_ != rhs.element_type_ ||
-  //     lhs.element_type_ != result.element_type_ ||
-  //     rhs.element_type_ != result.element_type_) {
-  //   type_check_passed = false;
+  // check shape
+  bool shape_check_passed = true;
+  // if (lhs.col_num_ != rhs.row_num_ || result.row_num_ != lhs.row_num_ ||
+  //     result.col_num_ != rhs.col_num_) {
+  //   shape_check_passed = false;
   // }
-  // check shape
-  bool shape_check_passed = true;
-  if (lhs.col_num_ != rhs.row_num_ || result.row_num_ != lhs.row_num_ ||
-          result.col_num_ != rhs.col_num_) {
-    shape_check_passed = false;
-  }
-  bool check_passed = type_check_passed && shape_check_passed;
-  // check_passed = CheckParameters(lhs_d, rhs_d);
-
-  if (check_passed) {
-    // prefetch
-    // float *lhs_ptr = lhs.Prefetch();
-    // float *rhs_ptr = rhs.Prefetch();
-
-    // cublas init
-    // cublasHandle_t handle;
-    // cublasCreate(&handle);
-
-    // switch (0) {
-    // case:
-    //   INT8 // SIMD指令,对计算能力要求在x.y以上。
-    //       break;
-    // case:
-    //   FLOAT32
-    //   float a = 1.f;
-    //   float b = 0.f;
-    //   float *lhs_ptr = lhs.Get();
-    //   float *rhs_ptr = rhs.Get();
-    //   float *result_ptr = result.Get();
-    //   int r_row = rhs.row_num_;
-    //   int l_col = lhs.col_num_;
-    //   int cross_dim = lhs.row_num_;
-    //   // C=a*opt(A)*opt(B)+b*C
-    //   // result = trans(rhs)*lhs + mod_mat
-    //   cublasSgemm(handle, CUBLAS_OP_T, CUBLAS_OP_N, r_row, l_col, cross_dim, //
-    //               &a, rhs_ptr, cross_dim, // A
-    //               lhs_ptr, cross_dim,     // B
-    //               &b, result_ptr, r_row);
-    //   break;
-    // }
-
-    // cudaDeviceSynchronize();
-    // // clear cublas handle
-    // cublasDestroy(handle);
-  }
-
-  return;
-}
-
-void Gemm(const Matrix<Float32> &lhs, const Matrix<Float32> &rhs,
-          Matrix<Float32> &result) {
-  // check parameters
-  // check type
-  bool type_check_passed = true;
-  // check shape
-  bool shape_check_passed = true;
-  if (lhs.col_num_ != rhs.row_num_ || result.row_num_ != lhs.row_num_ ||
-          result.col_num_ != rhs.col_num_) {
-    shape_check_passed = false;
-  }
   bool check_passed = type_check_passed && shape_check_passed;
   // check_passed = CheckParameters(lhs_d, rhs_d);
 
@@ -148,4 +152,5 @@ void Gemm(const Matrix<Float32> &lhs, const Matrix<Float32> &rhs,
   }
 
   return;
+}
 }

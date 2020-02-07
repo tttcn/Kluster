@@ -6,6 +6,7 @@
 
 #include "debug_tool.h"
 
+namespace Kluster {
 ErrorType CudaCheck(cudaError_t error_code) {
   ErrorType execute_state = NO_ERROR;
   if (error_code != cudaSuccess) {
@@ -38,3 +39,4 @@ ErrorType CudaFree(void *pointer_managed) {
 //     return
 //     CudaCheck(cudaMemPrefetchAsync(pointer_managed,buffer_size,0,NULL));
 // }
+}
