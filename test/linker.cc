@@ -18,6 +18,7 @@
 #include <unistd.h>
 
 #include "src/api.h"
+#include "src/debug_tool.h"
 
 void init_node(Node *node, int node_num) {
   for (int id = 0; id < node_num; ++id) {
@@ -94,7 +95,7 @@ int main(int argc, char *argv[]) {
   float threshold = atof(threshold_string);
 
   int edge_num = MAX_EDGE_NUM;
-  coo *edge_data = new coo[edge_num];
+  Coo *edge_data = new Coo[edge_num];
   DEBUG("edge malloced\n");
 
   // 并查集初始化
@@ -110,8 +111,8 @@ int main(int argc, char *argv[]) {
                                    fd_node, 0); // mmap映射数据至内存中
   DEBUG("mmap done\n");
 
-  int batch_len = BATCH_LEN; // 经验参数，16K对应最大4G的coo
-  edge_num = DistanceLinker(node_data, edge_data, data_num, data_dim, threshold, batch_len);
+  int batch_len = BATCH_LEN; // 经验参数，16K对应最大4G的Coo
+  edge_num = DistanceLinker(node_data, edge_data, data_num, data_dim, edge_num, threshold, batch_len);
   printf("edge linked\n");
 
   // 写回结果

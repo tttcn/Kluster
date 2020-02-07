@@ -41,7 +41,7 @@ int gemmtest(const float *data, float *result, int batch_len, int x, int y)
     return count;
 }
 
-int taketest(const float *data, float *result, coo *output, int batch_len, int edge_num, int lid, int rid)
+int taketest(const float *data, float *result, Coo *output, int batch_len, int edge_num, int lid, int rid)
 {
     int count = 0;
     for (int edge_id = 0; edge_id < edge_num; ++edge_id)

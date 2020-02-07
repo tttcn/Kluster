@@ -1,4 +1,4 @@
-CC = g++
+CXX = g++
 NVCC = nvcc
 CXXFLAGS = -fopenmp -O3 -std=c++11 -fPIC -Wextra
 CUDAFLAGS = -std=c++11 -c 
@@ -8,7 +8,7 @@ INCDIRS = -I/usr/local/cuda/include -I..
 BINDIR = ../bin
 
 linker.o: linker.cc
-	$(CC) $(CXXFLAGS) $(INCDIRS) linker.cc -o linker.o
+	$(CXX) $(CXXFLAGS) $(INCDIRS) linker.cc -o linker.o
 
 linker: linker.cc
-	$(CC) $(CXXFLAGS) $(INCDIRS) linker.cc -o $(BINDIR)/$@ $(LIBDIRS) $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) $(INCDIRS) linker.cc -o $(BINDIR)/$@ $(LIBDIRS) $(LDFLAGS)

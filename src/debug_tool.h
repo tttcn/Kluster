@@ -15,6 +15,6 @@
 float l2_float32(const float *data, int data_i, int data_j, int data_dim);
 float dot_float32(const float *data, int data_i, int data_j, int data_dim);
 int gemmtest(const float *data, float *result, int batch_len, int x, int y);
-int taketest(const float *data, float *result, coo *output, int batch_len, int edge_num, int lid, int rid);
+int taketest(const float *data, float *result, Coo *output, int batch_len, int edge_num, int lid, int rid);
 
 #endif // KLUSTER_DEBUG_TOOL_H_
