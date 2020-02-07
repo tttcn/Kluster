@@ -50,70 +50,15 @@ void Gemm(const Matrix<T> &lhs, const Matrix<T> &rhs, Matrix<T> &result) {
   // check parameters
   // check type
   bool type_check_passed = true;
-  // ElementType element_type = lhs.element_type_;
-  // if (lhs.element_type_ != rhs.element_type_ ||
-  //     lhs.element_type_ != result.element_type_ ||
-  //     rhs.element_type_ != result.element_type_) {
-  //   type_check_passed = false;
-  // }
-  // check shape
-  bool shape_check_passed = true;
-  if (lhs.col_num_ != rhs.row_num_ || result.row_num_ != lhs.row_num_ ||
-          result.col_num_ != rhs.col_num_) {
-    shape_check_passed = false;
+  ElementType element_type = lhs.element_type_;
+  if (lhs.element_type_ != rhs.element_type_ ||
+      lhs.element_type_ != result.element_type_ ||
+      rhs.element_type_ != result.element_type_) {
+    type_check_passed = false;
   }
-  bool check_passed = type_check_passed && shape_check_passed;
-  // check_passed = CheckParameters(lhs_d, rhs_d);
-
-  if (check_passed) {
-    // prefetch
-    // float *lhs_ptr = lhs.Prefetch();
-    // float *rhs_ptr = rhs.Prefetch();
-
-    // cublas init
-    // cublasHandle_t handle;
-    // cublasCreate(&handle);
-
-    // switch (0) {
-    // case:
-    //   INT8 // SIMD指令,对计算能力要求在x.y以上。
-    //       break;
-    // case:
-    //   FLOAT32
-    //   float a = 1.f;
-    //   float b = 0.f;
-    //   float *lhs_ptr = lhs.Get();
-    //   float *rhs_ptr = rhs.Get();
-    //   float *result_ptr = result.Get();
-    //   int r_row = rhs.row_num_;
-    //   int l_col = lhs.col_num_;
-    //   int cross_dim = lhs.row_num_;
-    //   // C=a*opt(A)*opt(B)+b*C
-    //   // result = trans(rhs)*lhs + mod_mat
-    //   cublasSgemm(handle, CUBLAS_OP_T, CUBLAS_OP_N, r_row, l_col, cross_dim, //
-    //               &a, rhs_ptr, cross_dim, // A
-    //               lhs_ptr, cross_dim,     // B
-    //               &b, result_ptr, r_row);
-    //   break;
-    // }
-
-    // cudaDeviceSynchronize();
-    // // clear cublas handle
-    // cublasDestroy(handle);
-  }
-
-  return;
-}
-
-void Gemm(const Matrix<Float32> &lhs, const Matrix<Float32> &rhs,
-          Matrix<Float32> &result) {
-  // check parameters
-  // check type
-  bool type_check_passed = true;
-  // check shape
-  bool shape_check_passed = true;
+  check shape bool shape_check_passed = true;
   if (lhs.col_num_ != rhs.row_num_ || result.row_num_ != lhs.row_num_ ||
-          result.col_num_ != rhs.col_num_) {
+      result.col_num_ != rhs.col_num_) {
     shape_check_passed = false;
   }
   bool check_passed = type_check_passed && shape_check_passed;
@@ -128,20 +73,29 @@ void Gemm(const Matrix<Float32> &lhs, const Matrix<Float32> &rhs,
     cublasHandle_t handle;
     cublasCreate(&handle);
 
-    float a = 1.f;
-    float b = 0.f;
-    auto lhs_ptr = lhs.Get();
-    auto rhs_ptr = rhs.Get();
-    auto result_ptr = result.Get();
-    int r_row = rhs.row_num_;
-    int l_col = lhs.col_num_;
-    int cross_dim = lhs.row_num_;
-    // C=a*opt(A)*opt(B)+b*C
-    // result = trans(rhs)*lhs + mod_mat
-    cublasSgemm(handle, CUBLAS_OP_T, CUBLAS_OP_N, r_row, l_col, cross_dim, //
-                &a, rhs_ptr, cross_dim,                                    // A
-                lhs_ptr, cross_dim,                                        // B
-                &b, result_ptr, r_row);
+    switch (0) {
+    case:
+      INT8 // SIMD指令,对计算能力要求在x.y以上。
+          break;
+    case:
+      FLOAT32
+      float a = 1.f;
+      float b = 0.f;
+      float *lhs_ptr = static_cast<float *> lhs.Get();
+      float *rhs_ptr = static_cast<float *> rhs.Get();
+      float *result_ptr = static_cast<float *> result.Get();
+      int r_row = rhs.row_num_;
+      int l_col = lhs.col_num_;
+      int cross_dim = lhs.row_num_;
+      // C=a*opt(A)*opt(B)+b*C
+      // result = trans(rhs)*lhs + mod_mat
+      cublasSgemm(handle, CUBLAS_OP_T, CUBLAS_OP_N, r_row, l_col, cross_dim, //
+                  &a, rhs_ptr, cross_dim, // A
+                  lhs_ptr, cross_dim,     // B
+                  &b, result_ptr, r_row);
+      break;
+    }
+
     cudaDeviceSynchronize();
     // clear cublas handle
     cublasDestroy(handle);

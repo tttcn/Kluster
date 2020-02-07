@@ -57,4 +57,4 @@ Matrix<T> Slice(Uint32 row_begin, Uint32 row_end, Uint32 col_begin,
 T *Matrix::Get() { return managed_pointer; }
 const T *Get() const { return managed_pointer; }
 
-T &operator[](Uint32 idx){return managed_pointer[idx]}
+T &operator[](size_t idx) { return managed_pointer + idx * element_size_ }

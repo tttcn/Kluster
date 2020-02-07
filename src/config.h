@@ -41,17 +41,17 @@ typedef unsigned int Uint32;
 
 // enumerates
 enum DeviceType { CPU, NUMA, CUDA };
-// enum ElementType {
-//   FLOAT64,
-//   FLOAT32,
-//   FLOAT16,
-//   INT32,
-//   INT16,
-//   INT8,
-//   UINT64,
-//   UINT32,
-//   COO
-// };
+enum ElementType {
+  FLOAT64,
+  FLOAT32,
+  FLOAT16,
+  INT32,
+  INT16,
+  INT8,
+  UINT64,
+  UINT32,
+  COO
+};
 enum ErrorType {
   NO_ERROR,
   FUNCTION_ERROR,
@@ -61,6 +61,6 @@ enum ErrorType {
 };
 
 // consts
-// size_t kElementSize[32] = {8, 4, 2, 4, 2, 1, 8, 4, 16};
+size_t kElementSize[32] = {8, 4, 2, 4, 2, 1, 8, 4, 16};
 
 #endif // KLUSTER_CONFIG_H_
