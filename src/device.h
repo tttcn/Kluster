@@ -21,6 +21,7 @@ public:
   // void Get();
   void Set();
   void Exec();
+  void Cache(size_t cache_size);
   void *Malloc(size_t buffer_size);
   void Free(void *pointer);
 };

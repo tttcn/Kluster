@@ -23,11 +23,11 @@ __global__ void ModuleTakeKernel(const float *product_d,
 __global__ void SetModuleKernel(const float *data_d, float *module_d,
                                 int data_num, int data_dim);
 
-template <typename T> void SetModule(const Matrix<T> &data, Matrix<T> &module){ printf("undefined\n");}
+template <typename T> void SetModule(const Matrix<T> &data, Matrix<T> &module);
 template <typename T>
 Uint32 ModuleTake(const Matrix<T> &product, const Matrix<T> &module_base,
                   const Matrix<T> &module_query, Matrix<Coo> &output,
-                  float threshold){printf("undefined\n");}
+                  float threshold);
 }
 
 #endif // KLUSTER_CUDA_MODULETAKE_H_

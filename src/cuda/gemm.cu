@@ -44,6 +44,27 @@ void GemmBlas(const float *lhs_d, const float *rhs_d, float *result_d,
   return;
 }
 
+template <typename T>
+void Gemm(const Matrix<T> &lhs, const Matrix<T> &rhs, Matrix<T> &result) {
+  // check parameters
+  // check type
+  bool type_check_passed = true;
+  // check shape
+  bool shape_check_passed = true;
+  // if (lhs.col_num_ != rhs.row_num_ || result.row_num_ != lhs.row_num_ ||
+  //     result.col_num_ != rhs.col_num_) {
+  //   shape_check_passed = false;
+  // }
+  bool check_passed = type_check_passed && shape_check_passed;
+  // check_passed = CheckParameters(lhs_d, rhs_d);
+
+  if (check_passed) {
+    printf("undefined gemm\n");
+  }
+
+  return;
+}
+
 // gemm(lhs,rhs,result) = result = -2*trans(rhs)*lhs
 //
 // template <typename T>
@@ -139,7 +160,7 @@ void Gemm<Float32>(const Matrix<Float32> &lhs, const Matrix<Float32> &rhs,
     auto result_ptr = result.Get();
     int r_row = rhs.row_num_;
     int l_col = lhs.col_num_;
-    int cross_dim = lhs.row_num_;
+    int cross_dim = lhs.col_num_;
     // C=a*opt(A)*opt(B)+b*C
     // result = trans(rhs)*lhs + mod_mat
     cublasSgemm(handle, CUBLAS_OP_T, CUBLAS_OP_N, r_row, l_col, cross_dim, //

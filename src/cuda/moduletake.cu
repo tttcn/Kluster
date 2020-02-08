@@ -16,6 +16,13 @@
 #include "src/matrix.h"
 
 namespace Kluster {
+
+template <typename T> void SetModule(const Matrix<T> &data, Matrix<T> &module){printf("undefined SetModule\n");}
+template <typename T>
+Uint32 ModuleTake(const Matrix<T> &product, const Matrix<T> &module_base,
+                  const Matrix<T> &module_query, Matrix<Coo> &output,
+                  float threshold){printf("undefined ModuleTake\n");}
+
 template<>
 void SetModule<Float32>(const Matrix<Float32> &data, Matrix<Float32> &module) {
   // check parameters

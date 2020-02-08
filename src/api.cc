@@ -24,6 +24,10 @@ int DistanceLinker(const void *node_data, void *edge_data, size_t node_num,
   Device device1(CUDA, 1);
   DEBUG("device checked\n");
 
+#ifdef DEBUG_
+  batch_len = 16;
+#endif
+
   // 预先分配空间
   size_t node_size = node_num * node_dim * sizeof(float);
   DEBUG("data size is %lu\n", node_size);
@@ -31,7 +35,8 @@ int DistanceLinker(const void *node_data, void *edge_data, size_t node_num,
   // _m means managed
   Matrix<Float32> node_m(node_num, node_dim, CUDA);
   memcpy(node_m.Get(), node_data, node_size);
-  Matrix<Coo> edge_m(edge_limit, 1, CUDA);
+  Coo *edge_m = static_cast<Coo *>(edge_data);
+  // Matrix<Coo> edge_m(edge_limit, 1, CUDA);
   Matrix<Float32> module_m(node_num, 1, CUDA);
   Matrix<Float32> result_m(batch_len, batch_len, CUDA);
   Matrix<Coo> output_m(batch_len, batch_len, CUDA);
@@ -51,7 +56,7 @@ int DistanceLinker(const void *node_data, void *edge_data, size_t node_num,
   int seg_num = node_num / batch_len;
 
 #ifdef DEBUG_
-  seg_num = 3;
+  seg_num = 1;
 #endif
 
   DEBUG("batch len is %lu\n", batch_len);
@@ -76,16 +81,24 @@ int DistanceLinker(const void *node_data, void *edge_data, size_t node_num,
       auto module_base_m = module_m.Slice(lid, lid + batch_len, 0, 1);
       auto module_query_m = module_m.Slice(rid, rid + batch_len, 0, 1);
 
-      Gemm(lhs_m, rhs_m, result_m);
-      // #ifdef DEBUG_
-      //       gemmtest(node_m, result_m, batch_len, lid, rid);
-      // #endif
-      Uint32 take_num = ModuleTake(result_m, module_base_m, module_query_m,
+      Gemm(*lhs_m, *rhs_m, result_m);
+      DEBUG("gemm pass\n");
+#ifdef DEBUG_
+      lhs_m->Show();
+      rhs_m->Show();
+      gemmtest(node_m.Get(), result_m.Get(), batch_len, lid, rid);
+#endif
+      Uint32 take_num = ModuleTake(result_m, *module_base_m, *module_query_m,
                                    output_m, threshold);
-      // #ifdef DEBUG_
-      //       taketest(node_m, result_m, output_m, batch_len, *take_num_m, lid,
-      //       rid);
-      // #endif
+      DEBUG("moduletake pass, take num: %u\n", take_num);
+#ifdef DEBUG_
+      taketest(node_m.Get(), result_m.Get(), output_m.Get(), batch_len,
+               take_num, lid, rid);
+#endif
+      delete lhs_m;
+      delete rhs_m;
+      delete module_base_m;
+      delete module_query_m;
       // 写回结果
 
       // edge_m.Append(output_m); id的偏移需要修正

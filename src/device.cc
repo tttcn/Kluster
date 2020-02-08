@@ -2,6 +2,7 @@
 #include "debug_tool.h"
 
 namespace Kluster {
+
 Device::Device(DeviceType device_type, DeviceId device_id) {
   // device check
   device_type_ = device_type;
@@ -23,6 +24,11 @@ void Device::Set() {
 void Device::Exec() {
   this->Set();
   return;
+}
+
+void Device::Cache(size_t cache_size){
+  // DeviceCache();
+  // cache_list_.pushback(Malloc(cache_size));
 }
 
 void *Device::Malloc(size_t buffer_size) {
